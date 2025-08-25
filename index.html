@@ -89,8 +89,8 @@
                 </div>
                         <div class="mt-2 text-sm text-gray-500">
             <p>Try questions like: "Explain photosynthesis" or "Help me solve 2x + 5 = 15"</p>
-            <div id="connectionStatus" class="mt-2">
-                <span class="text-red-500">🔴 Backend: Disconnected</span>
+            <div class="mt-2 text-xs text-gray-400">
+                <p>🟢 Running on Netlify - No backend required</p>
             </div>
         </div>
             </div>
@@ -164,25 +164,10 @@
         const sendButton = document.getElementById('sendButton');
         const backButton = document.getElementById('backButton');
         const currentSubject = document.getElementById('currentSubject');
-        const connectionStatus = document.getElementById('connectionStatus');
 
         let currentSubjectType = 'general';
 // Removed invalid curl command
-        async function checkBackendConnection() {
-            try {
-                const response = await fetch('/api/health');
-                if (response.ok) {
-                    connectionStatus.innerHTML = '<span class="text-green-500">🟢 Backend: Connected</span>';
-                    return true;
-                } else {
-                    connectionStatus.innerHTML = '<span class="text-yellow-500">🟡 Backend: Error</span>';
-                    return false;
-                }
-            } catch (error) {
-                connectionStatus.innerHTML = '<span class="text-red-500">🔴 Backend: Disconnected</span>';
-                return false;
-            }
-        }
+
 
         function initializeSubjects() {
             subjects.forEach(subject => {
@@ -240,46 +225,28 @@
         }
 
         async function generateAIResponse(message) {
-            console.log('Sending request to backend:', { query: message });
-            const apiUrl = '/api/ai-response'; // Backend endpoint
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ query: message })
-                });
-
-                if (!response.ok) {
-                    const errorDetails = await response.text();
-                    console.error(`Backend Error: ${response.status} - ${errorDetails}`);
-                    
-                    if (response.status === 404) {
-                        throw new Error('Backend server is not running. Please start the server with "npm start"');
-                    } else if (response.status === 500) {
-                        throw new Error('AI service error. Please check your API key configuration.');
-                    } else {
-                        throw new Error(`Backend Error: ${response.status} - ${errorDetails}`);
+            console.log('Processing AI response locally:', { query: message });
+            
+            // Use local AI responses for Netlify deployment (no backend needed)
+            const userMessage = message.toLowerCase();
+            
+            // Check if we have a specific response for this subject and query
+            if (aiResponses[currentSubjectType]) {
+                const responses = aiResponses[currentSubjectType];
+                
+                // Look for exact matches first
+                for (const [key, response] of Object.entries(responses)) {
+                    if (userMessage.includes(key)) {
+                        return response;
                     }
                 }
-
-                const data = await response.json();
-                return data.answer || 'Sorry, I could not find an answer to your question.';
-            } catch (error) {
-                console.error('Error connecting to the backend:', error);
                 
-                if (error.message.includes('Backend server is not running')) {
-                    return '❌ Backend server is not running. Please start the server with "npm start" in your terminal.';
-                } else if (error.message.includes('AI service error')) {
-                    return '❌ AI service configuration error. Please check your API key.';
-                } else if (error.message.includes('Failed to fetch')) {
-                    return '❌ Cannot connect to the backend server. Please ensure the server is running on port 3001.';
-                }
-                
-                return 'There was an error connecting to the AI service. Please try again later.';
+                // Return default response for this subject
+                return responses.default || 'I\'d be happy to help with that! Could you provide more details about what you\'d like to learn?';
             }
+            
+            // Fallback response
+            return 'I\'m here to help you learn! Please select a subject first and then ask your question.';
         }
 
         function sendMessage() {
@@ -303,10 +270,6 @@
 
         // Initialize the application
         initializeSubjects();
-        checkBackendConnection();
-        
-        // Check connection status every 30 seconds
-        setInterval(checkBackendConnection, 30000);
     </script>
 </body>
 </html>
