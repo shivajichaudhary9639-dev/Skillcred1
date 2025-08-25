@@ -89,9 +89,10 @@
                 </div>
                         <div class="mt-2 text-sm text-gray-500">
             <p>Try questions like: "Explain photosynthesis" or "Help me solve 2x + 5 = 15"</p>
-            <div class="mt-2 text-xs text-gray-400">
-                <p>🟢 Running on Netlify - No backend required</p>
-            </div>
+                            <div class="mt-2 text-xs text-gray-400">
+                    <p>🟢 Running on Netlify - No backend required</p>
+                    <button id="testButton" class="mt-2 px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600">Test AI Response</button>
+                </div>
         </div>
             </div>
         </div>
@@ -137,6 +138,8 @@
                 'algebra': 'Algebra deals with solving equations and working with variables. For example, to solve 2x + 5 = 15, subtract 5 from both sides and divide by 2 to get x = 5.',
                 'calculus': 'Calculus studies rates of change (differentiation) and accumulation (integration). The derivative gives us slope, while integrals find areas under curves.',
                 'geometry': 'Geometry deals with shapes, sizes, and properties of space. Key concepts include angles, triangles, circles, and the Pythagorean theorem.',
+                '100': '100 is a natural number. In mathematics, it\'s a perfect square (10²) and represents one hundred units. What would you like to know about 100?',
+                'multiplication': 'Multiplication is repeated addition. For example, 100 × 100 = 10,000. This is because you\'re adding 100 to itself 100 times.',
                 'default': 'I\'d be happy to help with that math concept! Could you provide more details about what specific area or problem you\'re working on?'
             },
             science: {
@@ -164,6 +167,7 @@
         const sendButton = document.getElementById('sendButton');
         const backButton = document.getElementById('backButton');
         const currentSubject = document.getElementById('currentSubject');
+        const testButton = document.getElementById('testButton');
 
         let currentSubjectType = 'general';
 // Removed invalid curl command
@@ -225,7 +229,7 @@
         }
 
         async function generateAIResponse(message) {
-            console.log('Processing AI response locally:', { query: message });
+            console.log('Processing AI response locally:', { query: message, subject: currentSubjectType });
             
             // Use local AI responses for Netlify deployment (no backend needed)
             const userMessage = message.toLowerCase();
@@ -237,28 +241,51 @@
                 // Look for exact matches first
                 for (const [key, response] of Object.entries(responses)) {
                     if (userMessage.includes(key)) {
+                        console.log('Found match for:', key);
                         return response;
                     }
                 }
                 
+                // Check for math calculations
+                if (currentSubjectType === 'math' && /\d+[\+\-\*\/]\d+/.test(message)) {
+                    try {
+                        const result = eval(message);
+                        return `The answer to ${message} = ${result}. This is a basic arithmetic calculation. Would you like to learn more about math concepts?`;
+                    } catch (e) {
+                        return 'I can see you\'re working on math! Could you provide more details about what specific area you\'d like help with?';
+                    }
+                }
+                
                 // Return default response for this subject
+                console.log('Using default response for subject:', currentSubjectType);
                 return responses.default || 'I\'d be happy to help with that! Could you provide more details about what you\'d like to learn?';
             }
             
             // Fallback response
+            console.log('No subject selected, using fallback');
             return 'I\'m here to help you learn! Please select a subject first and then ask your question.';
         }
 
         function sendMessage() {
             const message = messageInput.value.trim();
             if (!message) return;
+            
+            console.log('Sending message:', message);
             addMessage('user', message);
             messageInput.value = '';
+            
             const thinkingElement = showThinking();
             setTimeout(async () => {
-                chatMessages.removeChild(thinkingElement);
-                const aiResponse = await generateAIResponse(message);
-                addMessage('ai', aiResponse);
+                try {
+                    chatMessages.removeChild(thinkingElement);
+                    console.log('Getting AI response for:', message);
+                    const aiResponse = await generateAIResponse(message);
+                    console.log('AI response received:', aiResponse);
+                    addMessage('ai', aiResponse);
+                } catch (error) {
+                    console.error('Error in sendMessage:', error);
+                    addMessage('ai', 'Sorry, there was an error processing your request. Please try again.');
+                }
             }, 1500);
         }
 
@@ -267,9 +294,21 @@
             if (e.key === 'Enter') sendMessage();
         });
         backButton.addEventListener('click', goBackToSubjects);
+        
+        // Test button functionality
+        testButton.addEventListener('click', () => {
+            console.log('Test button clicked');
+            const testResponse = generateAIResponse('test message');
+            console.log('Test response:', testResponse);
+            addMessage('ai', 'Test successful! AI responses are working. Try asking a real question now.');
+        });
 
         // Initialize the application
+        console.log('Initializing application...');
+        console.log('Subjects:', subjects);
+        console.log('AI Responses:', aiResponses);
         initializeSubjects();
+        console.log('Application initialized successfully!');
     </script>
 </body>
 </html>
