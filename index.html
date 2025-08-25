@@ -256,6 +256,24 @@
                 }
             }
             
+            // Handle calculation requests
+            if (userMessage.includes('calculate') || userMessage.includes('what is') || userMessage.includes('solve')) {
+                if (currentSubjectType === 'math') {
+                    // Look for math expressions in the message
+                    const mathMatch = message.match(/(\d+[\+\-\*\/]\d+)/);
+                    if (mathMatch) {
+                        try {
+                            const result = eval(mathMatch[1]);
+                            return `The answer to ${mathMatch[1]} = ${result}. This is a basic arithmetic calculation. Would you like to learn more about math concepts?`;
+                        } catch (e) {
+                            return 'I can see you want me to calculate something! Please write the math problem clearly, like "100*100" or "5+3".';
+                        }
+                    } else {
+                        return 'I can help you calculate! Please write a math problem like "100*100" or "5+3" and I\'ll solve it for you.';
+                    }
+                }
+            }
+            
             // Check if we have a specific response for this subject and query
             if (aiResponses[currentSubjectType]) {
                 const responses = aiResponses[currentSubjectType];
@@ -268,13 +286,26 @@
                     }
                 }
                 
-                // Check for math calculations
-                if (currentSubjectType === 'math' && /\d+[\+\-\*\/]\d+/.test(message)) {
-                    try {
-                        const result = eval(message);
-                        return `The answer to ${message} = ${result}. This is a basic arithmetic calculation. Would you like to learn more about math concepts?`;
-                    } catch (e) {
-                        return 'I can see you\'re working on math! Could you provide more details about what specific area you\'d like help with?';
+                // Check for math calculations - improved pattern matching
+                if (currentSubjectType === 'math') {
+                    // Handle multiplication with * symbol
+                    if (message.includes('*')) {
+                        try {
+                            const result = eval(message);
+                            return `The answer to ${message} = ${result}. This is a basic arithmetic calculation. Would you like to learn more about math concepts?`;
+                        } catch (e) {
+                            return 'I can see you\'re working on math! Could you provide more details about what specific area you\'d like help with?';
+                        }
+                    }
+                    
+                    // Handle other math operations
+                    if (/[\+\-\*\/]/.test(message)) {
+                        try {
+                            const result = eval(message);
+                            return `The answer to ${message} = ${result}. This is a basic arithmetic calculation. Would you like to learn more about math concepts?`;
+                        } catch (e) {
+                            return 'I can see you\'re working on math! Could you provide more details about what specific area you\'d like help with?';
+                        }
                     }
                 }
                 
