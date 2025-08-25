@@ -58,7 +58,12 @@
         </header>
 
         <!-- Subject Selection -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12" id="subjectGrid"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12" id="subjectGrid">
+            <div class="text-center col-span-full mb-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Choose a Subject to Start Learning</h3>
+                <p class="text-gray-600">Click on any subject card below to begin your personalized learning session</p>
+            </div>
+        </div>
 
         <!-- Chat Interface -->
         <div class="hidden bg-white rounded-2xl shadow-xl overflow-hidden" id="chatInterface">
@@ -87,13 +92,13 @@
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
-                        <div class="mt-2 text-sm text-gray-500">
-            <p>Try questions like: "Explain photosynthesis" or "Help me solve 2x + 5 = 15"</p>
-                            <div class="mt-2 text-xs text-gray-400">
-                    <p>🟢 Running on Netlify - No backend required</p>
-                    <button id="testButton" class="mt-2 px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600">Test AI Response</button>
+                <div class="mt-2 text-sm text-gray-500">
+                    <p id="subjectExamples">Try questions like: "Explain photosynthesis" or "Help me solve 2x + 5 = 15"</p>
+                    <div class="mt-2 text-xs text-gray-400">
+                        <p>🟢 Running on Netlify - No backend required</p>
+                        <button id="testButton" class="mt-2 px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600">Test AI Response</button>
+                    </div>
                 </div>
-        </div>
             </div>
         </div>
 
@@ -142,6 +147,11 @@
                 'geometry': 'Geometry deals with shapes, sizes, and properties of space. Key concepts include angles, triangles, circles, and the Pythagorean theorem.',
                 '100': '100 is a natural number. In mathematics, it\'s a perfect square (10²) and represents one hundred units. What would you like to know about 100?',
                 'multiplication': 'Multiplication is repeated addition. For example, 100 × 100 = 10,000. This is because you\'re adding 100 to itself 100 times.',
+                'addition': 'Addition combines numbers to find their sum. For example, 5 + 3 = 8. Addition is commutative, meaning 5 + 3 = 3 + 5.',
+                'subtraction': 'Subtraction finds the difference between numbers. For example, 10 - 4 = 6. Subtraction is not commutative.',
+                'division': 'Division splits numbers into equal parts. For example, 15 ÷ 3 = 5, meaning 15 can be split into 3 equal groups of 5.',
+                'fraction': 'Fractions represent parts of a whole. For example, 1/2 means one part out of two equal parts. Fractions can be added, subtracted, multiplied, and divided.',
+                'percentage': 'Percentages represent parts per hundred. For example, 25% means 25 out of 100, or 1/4. To find 25% of 80, multiply 80 by 0.25 to get 20.',
                 'default': 'I\'d be happy to help with that math concept! Could you provide more details about what specific area or problem you\'re working on?'
             },
             science: {
@@ -150,19 +160,63 @@
                 'chemistry': 'Chemistry is the study of matter and its properties. It explores how substances interact, change, and combine to form new materials.',
                 'biology': 'Biology is the study of living organisms and their interactions with each other and their environment.',
                 'physics': 'Physics studies matter, energy, and their interactions. It explains how the universe works at its most fundamental level.',
+                'atom': 'Atoms are the basic building blocks of matter. Each atom has a nucleus containing protons and neutrons, surrounded by electrons.',
+                'molecule': 'Molecules are formed when two or more atoms join together through chemical bonds. Water (H2O) is a simple molecule.',
+                'cell': 'Cells are the basic units of life. All living organisms are made up of cells that perform various functions.',
+                'organism': 'An organism is any living thing, from single-celled bacteria to complex multicellular plants and animals.',
+                'force': 'Force is a push or pull that can change an object\'s motion or shape. Common forces include gravity, friction, and magnetism.',
+                'motion': 'Motion is the change in position of an object over time. Newton\'s laws describe how forces affect motion.',
+                'energy': 'Energy is the ability to do work or cause change. It comes in many forms like kinetic, potential, thermal, and electrical.',
+                'ecosystem': 'An ecosystem is a community of living organisms interacting with their physical environment.',
                 'default': 'That\'s an interesting science topic! Could you tell me which specific area (biology, chemistry, physics) and what exactly you want to learn?'
             },
-            history: { 'default': 'History helps us understand the past to better navigate the present. Would you like to learn about ancient history, modern history, or a specific event?' },
+            history: { 
+                'ancient': 'Ancient civilizations like Egypt, Greece, Rome, and Mesopotamia laid the foundation for modern society. They developed writing, architecture, and government systems.',
+                'civilization': 'Civilizations are complex societies with cities, government, religion, social classes, and writing systems.',
+                'war': 'Wars and battles have shaped human history, leading to changes in borders, governments, and societies.',
+                'battle': 'Battles are military engagements between opposing forces. They often determine the outcome of larger conflicts.',
+                'king': 'Kings are male monarchs who rule kingdoms. Throughout history, many countries were ruled by kings with absolute or limited power.',
+                'queen': 'Queens are female monarchs who rule kingdoms. Some queens ruled in their own right, while others ruled as regents.',
+                'monarch': 'Monarchs are rulers who inherit their position, usually from a parent. Monarchies have ruled many countries throughout history.',
+                'empire': 'Empires are large political units that control multiple territories and peoples, often through conquest.',
+                'revolution': 'Revolutions are dramatic changes in political, social, or economic systems, often involving violence.',
+                'default': 'History helps us understand the past to better navigate the present. Would you like to learn about ancient history, modern history, or a specific event?'
+            },
             english: {
                 'grammar': 'Grammar rules help us communicate clearly. For example, subjects and verbs must agree: "She writes" (correct) vs "She write" (incorrect).',
+                'sentence': 'Sentences express complete thoughts, while paragraphs group related sentences together. Good writing uses clear, varied sentence structures.',
+                'paragraph': 'Paragraphs organize related ideas into coherent units. Each paragraph typically focuses on one main idea.',
+                'story': 'Stories and narratives have characters, settings, plots, and themes. They can entertain, inform, or persuade readers.',
+                'narrative': 'Narratives tell stories about events, real or fictional. They help us understand human experiences and share information.',
+                'poem': 'Poetry uses language in creative ways, often with rhythm, rhyme, and imagery to express emotions and ideas.',
+                'poetry': 'Poetry is a form of literature that uses aesthetic and rhythmic qualities of language to evoke meanings.',
+                'literature': 'Literature includes written works of artistic value, such as novels, poems, plays, and essays.',
+                'writing': 'Good writing is clear, concise, and engaging. It involves organizing ideas logically and choosing words carefully.',
+                'reading': 'Reading comprehension involves understanding, analyzing, and interpreting written text.',
                 'default': 'English encompasses reading, writing, and communication skills. Are you working on grammar, literature analysis, or writing techniques?'
             },
             programming: {
                 'javascript': 'JavaScript is a programming language used for web development. It runs in browsers and can manipulate HTML, handle events, and create dynamic content.',
                 'python': 'Python is known for its readability and versatility. It\'s great for beginners and used in web development, data science, and automation.',
+                'function': 'Functions and methods are reusable blocks of code that perform specific tasks. They help organize code and avoid repetition.',
+                'method': 'Methods are functions that belong to objects or classes. They define the behavior of objects.',
+                'loop': 'Loops allow programs to repeat actions multiple times. Common types include for loops, while loops, and do-while loops.',
+                'iteration': 'Iteration is the process of repeating a set of instructions multiple times, often using loops.',
+                'variable': 'Variables store data that can change during program execution. They have names, types, and values.',
+                'data': 'Data is information that programs process and manipulate. It can be numbers, text, images, or other formats.',
+                'algorithm': 'Algorithms are step-by-step procedures for solving problems or performing tasks.',
+                'web': 'Web development involves creating websites and web applications using technologies like HTML, CSS, and JavaScript.',
                 'default': 'Programming involves writing instructions for computers. Which language or concept would you like to learn about?'
             },
-            general: { 'default': 'I\'m here to help you learn! You can ask about study techniques, time management, or any academic topic you\'re curious about.' }
+            general: { 
+                'study': 'Effective studying involves active learning, regular review, and understanding concepts rather than memorizing.',
+                'learn': 'Learning is most effective when you\'re engaged, practice regularly, and connect new information to what you already know.',
+                'time': 'Time management is crucial for learning. Break tasks into smaller parts, set priorities, and avoid procrastination.',
+                'memory': 'Memory techniques like spaced repetition, visualization, and association can help you retain information better.',
+                'note': 'Good note-taking involves organizing information, using your own words, and reviewing regularly.',
+                'test': 'Test preparation involves understanding the material, practicing with similar questions, and managing test anxiety.',
+                'default': 'I\'m here to help you learn! You can ask about study techniques, time management, or any academic topic you\'re curious about.'
+            }
         };
 
         const subjectGrid = document.getElementById('subjectGrid');
@@ -173,12 +227,17 @@
         const backButton = document.getElementById('backButton');
         const currentSubject = document.getElementById('currentSubject');
         const testButton = document.getElementById('testButton');
+        const subjectExamples = document.getElementById('subjectExamples');
 
         let currentSubjectType = 'general';
 // Removed invalid curl command
 
 
         function initializeSubjects() {
+            // Clear existing subjects (but keep the header)
+            const existingSubjects = subjectGrid.querySelectorAll('.subject-card');
+            existingSubjects.forEach(card => card.remove());
+            
             subjects.forEach(subject => {
                 const card = document.createElement('div');
                 card.className = 'subject-card bg-white rounded-xl p-6 text-center cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100';
@@ -201,7 +260,25 @@
             subjectGrid.classList.add('hidden');
             chatInterface.classList.remove('hidden');
             chatMessages.innerHTML = '';
+            
+            // Add welcome message with subject-specific guidance
             addMessage('ai', `Hello! I'm your ${subject.name} tutor. How can I help you learn today?`);
+            
+            // Add helpful examples based on the subject
+            setTimeout(() => {
+                const examples = {
+                    math: 'You can ask me to solve equations like "2x + 5 = 15", explain concepts like "fractions" or "calculus", or ask "What is 100 * 100?"',
+                    science: 'You can ask me about "photosynthesis", "gravity", "atoms", "cells", or any other science concept you\'re curious about!',
+                    history: 'You can ask me about "ancient civilizations", "World War II", "kings and queens", or any historical period or event!',
+                    english: 'You can ask me about "grammar rules", "writing tips", "literature analysis", or help with any English topic!',
+                    programming: 'You can ask me about "JavaScript basics", "Python functions", "web development", or any programming concept!',
+                    general: 'You can ask me about "study tips", "time management", "learning strategies", or any academic topic!'
+                };
+                
+                addMessage('ai', examples[subjectId] || examples.general);
+            }, 1000);
+            
+            updateSubjectExamples();
         }
 
         function goBackToSubjects() {
@@ -277,11 +354,12 @@
             // Check if we have a specific response for this subject and query
             if (aiResponses[currentSubjectType]) {
                 const responses = aiResponses[currentSubjectType];
+                console.log('Checking responses for subject:', currentSubjectType, 'Available keys:', Object.keys(responses));
                 
                 // Look for exact matches first
                 for (const [key, response] of Object.entries(responses)) {
                     if (userMessage.includes(key) && key !== 'default') {
-                        console.log('Found match for:', key);
+                        console.log('Found exact match for:', key);
                         return response;
                     }
                 }
@@ -309,6 +387,55 @@
                     }
                 }
                 
+                // Enhanced subject-specific responses
+                if (currentSubjectType === 'science') {
+                    if (userMessage.includes('atom') || userMessage.includes('molecule')) {
+                        return 'Atoms are the basic building blocks of matter. Molecules are formed when two or more atoms join together through chemical bonds. Would you like to learn more about chemistry?';
+                    }
+                    if (userMessage.includes('cell') || userMessage.includes('organism')) {
+                        return 'Cells are the basic units of life. All living organisms are made up of cells that perform various functions. This is a fundamental concept in biology!';
+                    }
+                    if (userMessage.includes('force') || userMessage.includes('motion') || userMessage.includes('energy')) {
+                        return 'Forces, motion, and energy are key concepts in physics. They help us understand how objects move and interact in the universe.';
+                    }
+                }
+                
+                if (currentSubjectType === 'history') {
+                    if (userMessage.includes('ancient') || userMessage.includes('civilization')) {
+                        return 'Ancient civilizations like Egypt, Greece, Rome, and Mesopotamia laid the foundation for modern society. They developed writing, architecture, and government systems.';
+                    }
+                    if (userMessage.includes('war') || userMessage.includes('battle')) {
+                        return 'Wars and battles have shaped human history, leading to changes in borders, governments, and societies. Which specific war or period interests you?';
+                    }
+                    if (userMessage.includes('king') || userMessage.includes('queen') || userMessage.includes('monarch')) {
+                        return 'Monarchies have ruled many countries throughout history. Kings and queens often had significant power and influence over their subjects and territories.';
+                    }
+                }
+                
+                if (currentSubjectType === 'english') {
+                    if (userMessage.includes('sentence') || userMessage.includes('paragraph')) {
+                        return 'Sentences express complete thoughts, while paragraphs group related sentences together. Good writing uses clear, varied sentence structures.';
+                    }
+                    if (userMessage.includes('story') || userMessage.includes('narrative')) {
+                        return 'Stories and narratives have characters, settings, plots, and themes. They can entertain, inform, or persuade readers.';
+                    }
+                    if (userMessage.includes('poem') || userMessage.includes('poetry')) {
+                        return 'Poetry uses language in creative ways, often with rhythm, rhyme, and imagery to express emotions and ideas.';
+                    }
+                }
+                
+                if (currentSubjectType === 'programming') {
+                    if (userMessage.includes('function') || userMessage.includes('method')) {
+                        return 'Functions and methods are reusable blocks of code that perform specific tasks. They help organize code and avoid repetition.';
+                    }
+                    if (userMessage.includes('loop') || userMessage.includes('iteration')) {
+                        return 'Loops allow programs to repeat actions multiple times. Common types include for loops, while loops, and do-while loops.';
+                    }
+                    if (userMessage.includes('variable') || userMessage.includes('data')) {
+                        return 'Variables store data that can change during program execution. They have names, types, and values.';
+                    }
+                }
+                
                 // Return default response for this subject
                 console.log('Using default response for subject:', currentSubjectType);
                 return responses.default || 'I\'d be happy to help with that! Could you provide more details about what you\'d like to learn?';
@@ -317,6 +444,19 @@
             // Fallback response
             console.log('No subject selected, using fallback');
             return 'I\'m here to help you learn! Please select a subject first and then ask your question.';
+        }
+
+        function updateSubjectExamples() {
+            const examples = {
+                math: 'Try: "Solve 2x + 5 = 15", "Explain fractions", "What is calculus?"',
+                science: 'Try: "Explain photosynthesis", "What is gravity?", "Tell me about atoms"',
+                history: 'Try: "Ancient civilizations", "World War II", "Kings and queens"',
+                english: 'Try: "Grammar rules", "Writing tips", "Literature analysis"',
+                programming: 'Try: "JavaScript basics", "Python functions", "Web development"',
+                general: 'Try: "Study tips", "Time management", "Learning strategies"'
+            };
+            
+            subjectExamples.textContent = examples[currentSubjectType] || examples.general;
         }
 
         function sendMessage() {
