@@ -135,6 +135,8 @@
         const aiResponses = {
             math: {
                 'hello': 'Hello! I\'m your math tutor. I can help with algebra, calculus, geometry, and more. What would you like to learn?',
+                'hi': 'Hi there! I\'m your math tutor. I can help you with algebra, calculus, geometry, statistics, and more. What would you like to learn today?',
+                'hey': 'Hey! I\'m your math tutor. I can help you with algebra, calculus, geometry, statistics, and more. What would you like to learn today?',
                 'algebra': 'Algebra deals with solving equations and working with variables. For example, to solve 2x + 5 = 15, subtract 5 from both sides and divide by 2 to get x = 5.',
                 'calculus': 'Calculus studies rates of change (differentiation) and accumulation (integration). The derivative gives us slope, while integrals find areas under curves.',
                 'geometry': 'Geometry deals with shapes, sizes, and properties of space. Key concepts include angles, triangles, circles, and the Pythagorean theorem.',
@@ -145,6 +147,9 @@
             science: {
                 'photosynthesis': 'Photosynthesis is the process where plants convert sunlight, water, and carbon dioxide into glucose and oxygen.',
                 'gravity': 'Gravity is the force that attracts objects with mass toward each other. On Earth, gravity gives objects weight and causes them to fall toward the ground.',
+                'chemistry': 'Chemistry is the study of matter and its properties. It explores how substances interact, change, and combine to form new materials.',
+                'biology': 'Biology is the study of living organisms and their interactions with each other and their environment.',
+                'physics': 'Physics studies matter, energy, and their interactions. It explains how the universe works at its most fundamental level.',
                 'default': 'That\'s an interesting science topic! Could you tell me which specific area (biology, chemistry, physics) and what exactly you want to learn?'
             },
             history: { 'default': 'History helps us understand the past to better navigate the present. Would you like to learn about ancient history, modern history, or a specific event?' },
@@ -232,7 +237,24 @@
             console.log('Processing AI response locally:', { query: message, subject: currentSubjectType });
             
             // Use local AI responses for Netlify deployment (no backend needed)
-            const userMessage = message.toLowerCase();
+            const userMessage = message.toLowerCase().trim();
+            
+            // Handle greetings and common phrases
+            if (userMessage.includes('hi') || userMessage.includes('hello') || userMessage.includes('hey')) {
+                if (currentSubjectType === 'math') {
+                    return 'Hi there! I\'m your math tutor. I can help you with algebra, calculus, geometry, statistics, and more. What would you like to learn today?';
+                } else if (currentSubjectType === 'science') {
+                    return 'Hi there! I\'m your science tutor. I can help you with physics, chemistry, biology, and earth science. What would you like to learn today?';
+                } else if (currentSubjectType === 'history') {
+                    return 'Hi there! I\'m your history tutor. I can help you with world history, US history, and ancient civilizations. What would you like to learn today?';
+                } else if (currentSubjectType === 'english') {
+                    return 'Hi there! I\'m your English tutor. I can help you with grammar, literature, writing, and reading. What would you like to learn today?';
+                } else if (currentSubjectType === 'programming') {
+                    return 'Hi there! I\'m your programming tutor. I can help you with JavaScript, Python, algorithms, and web development. What would you like to learn today?';
+                } else {
+                    return 'Hi there! I\'m your learning tutor. I can help you with study tips, learning strategies, and general knowledge. What would you like to learn today?';
+                }
+            }
             
             // Check if we have a specific response for this subject and query
             if (aiResponses[currentSubjectType]) {
@@ -240,7 +262,7 @@
                 
                 // Look for exact matches first
                 for (const [key, response] of Object.entries(responses)) {
-                    if (userMessage.includes(key)) {
+                    if (userMessage.includes(key) && key !== 'default') {
                         console.log('Found match for:', key);
                         return response;
                     }
