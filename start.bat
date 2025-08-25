@@ -1,8 +1,12 @@
 @echo off
-echo Starting LearnAI Tutor...
+echo Starting LearnAI Tutor Server...
 echo.
-echo Server will be available at: http://localhost:3001
-echo Press Ctrl+C to stop the server
+echo Make sure you have:
+echo 1. Node.js installed
+echo 2. Dependencies installed (run: npm install)
+echo 3. A .env file with your GEMINI_API_KEY
+echo.
+echo Starting server on port 3001...
 echo.
 npm start
 pause

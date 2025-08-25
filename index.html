@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LearnAI - Interactive Educational Tutor</title>
     <link rel="icon" href="data:,">
+    <!-- Tailwind CSS - For production, consider installing via npm -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Suppress Tailwind CDN warning in development
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.log('🔧 Development mode: Using Tailwind CSS CDN');
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .message-enter { animation: messageSlideIn 0.3s ease-out; }
@@ -80,9 +87,12 @@
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
-                <div class="mt-2 text-sm text-gray-500">
-                    <p>Try questions like: "Explain photosynthesis" or "Help me solve 2x + 5 = 15"</p>
-                </div>
+                        <div class="mt-2 text-sm text-gray-500">
+            <p>Try questions like: "Explain photosynthesis" or "Help me solve 2x + 5 = 15"</p>
+            <div id="connectionStatus" class="mt-2">
+                <span class="text-red-500">🔴 Backend: Disconnected</span>
+            </div>
+        </div>
             </div>
         </div>
 
@@ -154,9 +164,26 @@
         const sendButton = document.getElementById('sendButton');
         const backButton = document.getElementById('backButton');
         const currentSubject = document.getElementById('currentSubject');
+        const connectionStatus = document.getElementById('connectionStatus');
 
         let currentSubjectType = 'general';
 // Removed invalid curl command
+        async function checkBackendConnection() {
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    connectionStatus.innerHTML = '<span class="text-green-500">🟢 Backend: Connected</span>';
+                    return true;
+                } else {
+                    connectionStatus.innerHTML = '<span class="text-yellow-500">🟡 Backend: Error</span>';
+                    return false;
+                }
+            } catch (error) {
+                connectionStatus.innerHTML = '<span class="text-red-500">🔴 Backend: Disconnected</span>';
+                return false;
+            }
+        }
+
         function initializeSubjects() {
             subjects.forEach(subject => {
                 const card = document.createElement('div');
@@ -228,13 +255,29 @@
                 if (!response.ok) {
                     const errorDetails = await response.text();
                     console.error(`Backend Error: ${response.status} - ${errorDetails}`);
-                    throw new Error(`Backend Error: ${response.status} - ${errorDetails}`);
+                    
+                    if (response.status === 404) {
+                        throw new Error('Backend server is not running. Please start the server with "npm start"');
+                    } else if (response.status === 500) {
+                        throw new Error('AI service error. Please check your API key configuration.');
+                    } else {
+                        throw new Error(`Backend Error: ${response.status} - ${errorDetails}`);
+                    }
                 }
 
                 const data = await response.json();
                 return data.answer || 'Sorry, I could not find an answer to your question.';
             } catch (error) {
                 console.error('Error connecting to the backend:', error);
+                
+                if (error.message.includes('Backend server is not running')) {
+                    return '❌ Backend server is not running. Please start the server with "npm start" in your terminal.';
+                } else if (error.message.includes('AI service error')) {
+                    return '❌ AI service configuration error. Please check your API key.';
+                } else if (error.message.includes('Failed to fetch')) {
+                    return '❌ Cannot connect to the backend server. Please ensure the server is running on port 3001.';
+                }
+                
                 return 'There was an error connecting to the AI service. Please try again later.';
             }
         }
@@ -258,7 +301,12 @@
         });
         backButton.addEventListener('click', goBackToSubjects);
 
+        // Initialize the application
         initializeSubjects();
+        checkBackendConnection();
+        
+        // Check connection status every 30 seconds
+        setInterval(checkBackendConnection, 30000);
     </script>
 </body>
 </html>
