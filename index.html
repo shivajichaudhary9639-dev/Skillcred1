@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnAI - Interactive Educational Tutor</title>
+    <link rel="icon" href="data:,">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .message-enter { animation: messageSlideIn 0.3s ease-out; }
+        .message-think { animation: thinking 1.5s ease-in-out infinite; }
+        @keyframes messageSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes thinking {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .typing-indicator { width: 60px; height: 30px; position: relative; padding: 10px; }
+        .typing-dot {
+            width: 8px; height: 8px; margin: 0 4px; background-color: gray; border-radius: 50%; display: inline-block;
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <div class="gradient-bg rounded-2xl p-8 mb-8 text-white shadow-xl">
+                <i class="fas fa-graduation-cap text-5xl mb-4"></i>
+                <h1 class="text-4xl font-bold mb-2">LearnAI Tutor</h1>
+                <p class="text-xl opacity-90">Your personal AI-powered educational assistant</p>
+                <p class="text-sm mt-4 opacity-80">24/7 academic support in multiple subjects</p>
+            </div>
+        </header>
+
+        <!-- Subject Selection -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12" id="subjectGrid"></div>
+
+        <!-- Chat Interface -->
+        <div class="hidden bg-white rounded-2xl shadow-xl overflow-hidden" id="chatInterface">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white flex items-center justify-between">
+                <button id="backButton" class="mr-4 bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200" title="Back to subjects">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div>
+                    <h2 class="font-semibold" id="currentSubject">General Learning</h2>
+                    <p class="text-sm opacity-80">AI Educational Assistant</p>
+                </div>
+            </div>
+            
+            <div class="h-96 overflow-y-auto p-4 bg-gray-50" id="chatMessages">
+                <div class="message-enter bg-blue-100 p-4 rounded-lg max-w-xs md:max-w-md mb-4 ml-auto">
+                    <p>Hi! I'm ready to help you learn. What would you like to know about?</p>
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center">
+                    <input type="text" id="messageInput" placeholder="Ask your question..."
+                        class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button id="sendButton" class="bg-blue-600 text-white p-3 rounded-r-lg hover:bg-blue-700 transition-colors"
+                        aria-label="Send message" title="Send message">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="mt-2 text-sm text-gray-500">
+                    <p>Try questions like: "Explain photosynthesis" or "Help me solve 2x + 5 = 15"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="bg-white rounded-2xl p-8 shadow-xl mt-12">
+            <h2 class="text-2xl font-bold text-center mb-8">Why Choose LearnAI Tutor?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center p-4">
+                    <i class="fas fa-brain text-4xl text-blue-600 mb-4"></i>
+                    <h3 class="font-semibold mb-2">AI-Powered Learning</h3>
+                    <p class="text-gray-600">Get instant explanations and personalized learning paths</p>
+                </div>
+                <div class="text-center p-4">
+                    <i class="fas fa-clock text-4xl text-purple-600 mb-4"></i>
+                    <h3 class="font-semibold mb-2">24/7 Availability</h3>
+                    <p class="text-gray-600">Learn anytime, anywhere with round-the-clock support</p>
+                </div>
+                <div class="text-center p-4">
+                    <i class="fas fa-book text-4xl text-green-600 mb-4"></i>
+                    <h3 class="font-semibold mb-2">Multiple Subjects</h3>
+                    <p class="text-gray-600">Comprehensive coverage of academic subjects and topics</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Subject data
+        const subjects = [
+            { id: 'math', name: 'Mathematics', icon: 'fa-calculator', color: 'bg-blue-500', description: 'Algebra, Calculus, Geometry, Statistics' },
+            { id: 'science', name: 'Science', icon: 'fa-flask', color: 'bg-green-500', description: 'Physics, Chemistry, Biology, Earth Science' },
+            { id: 'history', name: 'History', icon: 'fa-landmark', color: 'bg-yellow-500', description: 'World History, US History, Ancient Civilizations' },
+            { id: 'english', name: 'English', icon: 'fa-book', color: 'bg-red-500', description: 'Grammar, Literature, Writing, Reading' },
+            { id: 'programming', name: 'Programming', icon: 'fa-code', color: 'bg-purple-500', description: 'JavaScript, Python, Algorithms, Web Development' },
+            { id: 'general', name: 'General Learning', icon: 'fa-graduation-cap', color: 'bg-indigo-500', description: 'Study Tips, Learning Strategies, General Knowledge' }
+        ];
+
+        // AI responses
+        const aiResponses = {
+            math: {
+                'hello': 'Hello! I\'m your math tutor. I can help with algebra, calculus, geometry, and more. What would you like to learn?',
+                'algebra': 'Algebra deals with solving equations and working with variables. For example, to solve 2x + 5 = 15, subtract 5 from both sides and divide by 2 to get x = 5.',
+                'calculus': 'Calculus studies rates of change (differentiation) and accumulation (integration). The derivative gives us slope, while integrals find areas under curves.',
+                'geometry': 'Geometry deals with shapes, sizes, and properties of space. Key concepts include angles, triangles, circles, and the Pythagorean theorem.',
+                'default': 'I\'d be happy to help with that math concept! Could you provide more details about what specific area or problem you\'re working on?'
+            },
+            science: {
+                'photosynthesis': 'Photosynthesis is the process where plants convert sunlight, water, and carbon dioxide into glucose and oxygen.',
+                'gravity': 'Gravity is the force that attracts objects with mass toward each other. On Earth, gravity gives objects weight and causes them to fall toward the ground.',
+                'default': 'That\'s an interesting science topic! Could you tell me which specific area (biology, chemistry, physics) and what exactly you want to learn?'
+            },
+            history: { 'default': 'History helps us understand the past to better navigate the present. Would you like to learn about ancient history, modern history, or a specific event?' },
+            english: {
+                'grammar': 'Grammar rules help us communicate clearly. For example, subjects and verbs must agree: "She writes" (correct) vs "She write" (incorrect).',
+                'default': 'English encompasses reading, writing, and communication skills. Are you working on grammar, literature analysis, or writing techniques?'
+            },
+            programming: {
+                'javascript': 'JavaScript is a programming language used for web development. It runs in browsers and can manipulate HTML, handle events, and create dynamic content.',
+                'python': 'Python is known for its readability and versatility. It\'s great for beginners and used in web development, data science, and automation.',
+                'default': 'Programming involves writing instructions for computers. Which language or concept would you like to learn about?'
+            },
+            general: { 'default': 'I\'m here to help you learn! You can ask about study techniques, time management, or any academic topic you\'re curious about.' }
+        };
+
+        const subjectGrid = document.getElementById('subjectGrid');
+        const chatInterface = document.getElementById('chatInterface');
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const backButton = document.getElementById('backButton');
+        const currentSubject = document.getElementById('currentSubject');
+
+        let currentSubjectType = 'general';
+// Removed invalid curl command
+        function initializeSubjects() {
+            subjects.forEach(subject => {
+                const card = document.createElement('div');
+                card.className = 'subject-card bg-white rounded-xl p-6 text-center cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100';
+                card.innerHTML = `
+                    <div class="${subject.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-white">
+                        <i class="fas ${subject.icon} text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">${subject.name}</h3>
+                    <p class="text-gray-600 text-sm">${subject.description}</p>
+                `;
+                card.addEventListener('click', () => selectSubject(subject.id));
+                subjectGrid.appendChild(card);
+            });
+        }
+
+        function selectSubject(subjectId) {
+            const subject = subjects.find(s => s.id === subjectId);
+            currentSubjectType = subjectId;
+            currentSubject.textContent = subject.name;
+            subjectGrid.classList.add('hidden');
+            chatInterface.classList.remove('hidden');
+            chatMessages.innerHTML = '';
+            addMessage('ai', `Hello! I'm your ${subject.name} tutor. How can I help you learn today?`);
+        }
+
+        function goBackToSubjects() {
+            chatInterface.classList.add('hidden');
+            subjectGrid.classList.remove('hidden');
+        }
+
+        function addMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            const isAI = sender === 'ai';
+            messageDiv.className = `message-enter ${isAI ? 'bg-gray-100' : 'bg-blue-100'} p-4 rounded-lg max-w-xs md:max-w-md mb-4 ${isAI ? '' : 'ml-auto'}`;
+            messageDiv.innerHTML = `<p>${text}</p>`;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showThinking() {
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.className = 'bg-gray-100 p-4 rounded-lg max-w-xs md:max-w-md mb-4 message-enter';
+            thinkingDiv.innerHTML = `
+                <div class="typing-indicator">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </div>
+            `;
+            chatMessages.appendChild(thinkingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return thinkingDiv;
+        }
+
+        async function generateAIResponse(message) {
+            console.log('Sending request to backend:', { query: message });
+            const apiUrl = '/api/ai-response'; // Backend endpoint
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: message })
+                });
+
+                if (!response.ok) {
+                    const errorDetails = await response.text();
+                    console.error(`Backend Error: ${response.status} - ${errorDetails}`);
+                    throw new Error(`Backend Error: ${response.status} - ${errorDetails}`);
+                }
+
+                const data = await response.json();
+                return data.answer || 'Sorry, I could not find an answer to your question.';
+            } catch (error) {
+                console.error('Error connecting to the backend:', error);
+                return 'There was an error connecting to the AI service. Please try again later.';
+            }
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            addMessage('user', message);
+            messageInput.value = '';
+            const thinkingElement = showThinking();
+            setTimeout(async () => {
+                chatMessages.removeChild(thinkingElement);
+                const aiResponse = await generateAIResponse(message);
+                addMessage('ai', aiResponse);
+            }, 1500);
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        backButton.addEventListener('click', goBackToSubjects);
+
+        initializeSubjects();
+    </script>
+</body>
+</html>
